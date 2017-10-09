@@ -10,10 +10,15 @@ OBJDIR:=obj
 #==================================
 #Proceso de compilado de programa =
 #==================================
-bin/$(EXEC):$(OBJS)  
+all: bin/$(EXEC)
+bin/$(EXEC):$(OBJS) | bin  
 	gcc -o $@ $(OBJS) -std=c99 -lm
-$(OBJDIR)/%.o: src/%.c 
-	gcc $(CFLAGS) -lm $< -o $@ 
+bin:
+	mkdir -p $@
+$(OBJDIR)/%.o: src/%.c | $(OBJDIR)
+	gcc $(CFLAGS) -lm $< -o $@
+$(OBJDIR): 
+	mkdir -p $@ 
 #obj/lectura.o: source/lectura.c
 #	gcc $(CFLAGS) source/lectura.c 
 #obj/estructura.o: source/estructura.c

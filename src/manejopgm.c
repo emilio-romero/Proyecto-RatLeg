@@ -1,4 +1,5 @@
 #include "manejopgm.h" 
+#include "patarata.h" 
 void readpgmParams(int argc, char *argv[],char *file){
 if(argc>1) strcpy(file,argv[1]);
 }
