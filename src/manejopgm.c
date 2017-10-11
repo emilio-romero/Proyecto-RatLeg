@@ -45,6 +45,10 @@ FILE *f1=fopen(pgmfile,"r");
 fclose(f1);
 return(mat);}
 
+int readFrame(char *cfile,pata *frame){
+frame->imagen=readPgm(cfile,&(frame->nr),&(frame->nc),&(frame->gs));
+return(0);}
+
 int **recortarPierna(int **Apgm, int nr, int nc, int *nnr, int *nnc){
 int li,lr,lu,ld,flag=0;
 int **nmat; 

@@ -11,7 +11,9 @@ OBJDIR:=obj
 #Proceso de compilado de programa =
 #==================================
 all: bin/$(EXEC)
+recortar: bin/recortar
 bin/$(EXEC):$(OBJS) | bin  
+	rm -f $(OBJDIR)/recorta.o
 	gcc -o $@ $(OBJS) -std=c99 -lm
 bin:
 	mkdir -p $@
@@ -19,6 +21,10 @@ $(OBJDIR)/%.o: src/%.c | $(OBJDIR)
 	gcc $(CFLAGS) -lm $< -o $@
 $(OBJDIR): 
 	mkdir -p $@ 
+bin/recortar:$(OBJS)| bin
+	rm -f $(OBJDIR)/main.o 	
+	gcc -o $@ $(OBJS) -std=c99 -lm
+
 #obj/lectura.o: source/lectura.c
 #	gcc $(CFLAGS) source/lectura.c 
 #obj/estructura.o: source/estructura.c
