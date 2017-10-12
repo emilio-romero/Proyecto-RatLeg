@@ -3,6 +3,7 @@
 #include "manejopgm.h"
 #include "patarata.h"
 #include <math.h> 
+#define PI 3.141592
 int main(int argc, char *argv[]){
 char archivo[30]; 
 readpgmParams(argc, argv, archivo);
@@ -12,13 +13,17 @@ puntoInicial(&myframe);
 printf("Filas: %d, Columnas: %d\n",myframe.nr,myframe.nc);
 printf("x inicial: %d, y inicial: %d\n",myframe.p0[0],myframe.p0[1]);
 dibujaPunto(&myframe);
+angleBresenham(&myframe,100,100,1.0472,50);
+angleBresenham(&myframe,0,0,0.78540,141);
 writePgm(myframe.imagen,myframe.nr,myframe.nc,myframe.gs,"modificado.pgm");
 printf("\nSu programa ha terminado\n");
 /*double theta; 
 for(int i=0;i>=-90;i--){
 theta=(double)i;
 printf("angulo: %i, coseno:%lf, angulo*coseno:%d\n",(int)theta,cos(theta),
-(int)round(theta*cos(theta)));
+(int)round(i*cos(theta)));
 }*/
+int cero=0;
+printf("pruebas: %d\n",15+(int)round(20*cos(1.5708)));
 return 0;}
 
