@@ -8,17 +8,28 @@ int i,j,flag=0;
     }
     if(flag==1) break;
   }
-  frame->p0[0]=i+5; 
-  frame->p0[1]=j;
+  frame->p0[0]=j; 
+  frame->p0[1]=i+5;
 
+}
+void puntoFinal(pata *frame){
+int i,j,flag=0; 
+  for(i=frame->nr-1;i>=0;i--){
+    for(j=frame->nc-1;j>=0;j--){
+      if(frame->imagen[i][j]!=0){flag=1; break;} 
+    }
+    if(flag==1) break;
+  }
+  frame->pf[0]=j; 
+  frame->pf[1]=i-5;
 }
 
 void dibujaPunto(pata *frame){
 int x,y;
-for(int i=frame->p0[0]-4;i<frame->p0[0]+4;i++){
-  for(int j=(frame->p0[1])-4;j<(frame->p0[1])+4;j++){
-    x=(i-(frame->p0[0]))*(i-(frame->p0[0]));  
-    y=(j-(frame->p0[1]))*(j-(frame->p0[1]));  
+for(int i=frame->p0[1]-4;i<frame->p0[1]+4;i++){
+  for(int j=(frame->p0[0])-4;j<(frame->p0[0])+4;j++){
+    x=(i-(frame->p0[1]))*(i-(frame->p0[1]));  
+    y=(j-(frame->p0[0]))*(j-(frame->p0[0]));  
     if((x+y)<16){frame->imagen[i][j]=127;}
   }
 }
@@ -37,24 +48,42 @@ int x,y;
   }
 }
 
-void angleBresenham(pata *frame, int i0, int j0, double th, int dist ){
-int xf,yf;
-xf=j0+(int)round(dist*cos(th));
-yf=i0+(int)round(dist*sin(th));
-int dx=xf-j0;
-int dy=yf-i0;
-int i=i0; 
-int eps=dx-dy; 
+void angleBresenham(pata *frame, int x0, int y0, double th, int dist ){
+  int xf,yf; 
+  xf=x0+(int)round(dist*cos(th));
+  yf=y0+(int)round(dist*sin(th));
+  int p0[]={x0,y0}; 
+  int pf[]={xf,yf};
+  pointBresenham(frame,p0,pf);
+}
 
-for(int j=j0;j<xf-1;j++){
-  frame->imagen[i][j]=127;
-  if(eps>=0){
-    i++;
-    eps-=dx; 
+int sign(int x){
+if(x<0) return -1; 
+if(x>=0) return 1;
+}
+
+void pointBresenham(pata *frame, int p0[2],int pf[2]){
+  int dx,dy; //Recordar emparejamiento i->y, j->x
+  int sx,sy;
+  int x=p0[0], y=p0[1];
+  dx=abs(pf[0]-p0[0]);
+  dy=abs(pf[1]-p0[1]);
+  sx=sign(pf[0]-p0[0]);
+  sy=sign(pf[1]-p0[1]);
+  int swap=0,temp; 
+  if(dy>dx){ //mejor implementar la funcion swap para invertir dx y dy
+    temp=dx;dx=dy;dy=temp;swap=1;
   }
-  eps+=dy;
+  int D=2*dy-dx; 
+  for(int j=0;j<dx;j++){
+    frame->imagen[y][x]=127;
+    while(D>=0){
+      D=D-2*dx;
+      if(swap) x+=sx; 
+      else y+=sy; 
+    }
+    D=D+2*dy;
+    if(swap) y+=sy; 
+    else x+=sx;
+  }
 }
-
-}
-
-

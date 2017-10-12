@@ -18,4 +18,6 @@ void puntoFinal(pata *frame);
 void dibujaPunto(pata *frame);
 void dibujaLinea(pata *frame,int x0, int y0, double th, int dist);
 void angleBresenham(pata *frame,int i0, int j0, double th, int dist);
+int sign(int x);
+void pointBresenham(pata *frame, int p0[2], int pf[2]);
 #endif 
