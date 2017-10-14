@@ -20,4 +20,6 @@ void dibujaLinea(pata *frame,int x0, int y0, double th, int dist);
 void angleBresenham(pata *frame,int i0, int j0, double th, int dist);
 int sign(int x);
 void pointBresenham(pata *frame, int p0[2], int pf[2]);
+int *fPerpendicular(int p0[2],int pf[2],int width);
+void dRectangulo(pata *frame,int x0, int y0, int xf, int yf, int width);
 #endif 
