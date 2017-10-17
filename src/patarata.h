@@ -30,6 +30,10 @@ int *fPerpendicular(int p0[2],int pf[2],int width);
 void dRectangulo(pata *frame,int t1[2], int t2[2], int width);
 int medidaRectangulo(pata *frame, int t1[2], int t2[2], int width);
 void findArticulaciones(pata *frame);
+void findArticulaciones4(pata *frame);
+void findArticulaciones2(pata *frame);
+void findArticulaciones3(pata *frame);
+void algorithmHarris(pata *frame);
 /*Funciones para la evolucion diferencial*/ 
 void initPob(int **poblacion, int np, int *lims);
 void representaPob(int **poblacion, pata *frame, int np);

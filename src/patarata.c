@@ -181,7 +181,7 @@ void findArticulaciones(pata *frame){
 int art1[2], art2[2], art3[2];
 int dir1, dir2,dir3;
 int flag=0;
-  for(int i=0;i<frame->nr-2;i++){
+  for(int i=0;i<frame->nr-2;i+=2){
     for(int j=0;j<frame->nc;j++){
       if(frame->imagen[i][j]==255){dir1=j;
         for(int k=0;k<frame->nc;k++){
@@ -210,15 +210,161 @@ int flag=0;
 printf("Primera articulacion: %d, %d\n",frame->a1[0],frame->a1[1]);
 printf("Segunda articulacion: %d, %d\n",frame->a2[0],frame->a2[1]);
 }
+void findArticulaciones4(pata *frame){
+pointBresenham(frame,frame->p0,frame->pf);
+int art1[2], art2[2], art3[2];
+int dir1, dir2=1,dir3;
+int mx, my;
+int flag=0;
+  for(int i=0;i<frame->nr-2;i++){
+    for(int j=0;j<frame->nc;j++){
+      dir1=0;
+      if(frame->imagen[i][j]==255){
+        do{
+          dir1++;
+        }while(frame->imagen[i][j+dir1]!=127);
+      }
+      if(frame->imagen[i][j]==127){
+        do{
+          dir1++;
+        }while(frame->imagen[i][j+dir1]!=255);
+       }
+     if(dir1>dir2){
+      dir2=dir1;
+      mx=j; my=i;
+     } 
+    }
+    }
+  for(int i=frame->a1[1]+1;i<frame->nr-2;i++){
+    for(int j=0;j<frame->nc;j++){
+      if(frame->imagen[i][j]==255){dir1=j;
+        for(int k=0;k<frame->nc;k++){
+          if(frame->imagen[i+1][k]==255) {dir2=k; break;} 
+        }
+      if(dir2-dir1<0){
+        frame->a2[0]=dir2; frame->a2[1]=i;
+        flag=1; break;}
+      else{break;}
+      }
+    }
+    if(flag==1){ flag=0; break;}  }
+printf("Primera articulacion: %d, %d\n",frame->a1[0],frame->a1[1]);
+printf("Segunda articulacion: %d, %d\n",frame->a2[0],frame->a2[1]);
+}
+
+
+void findArticulaciones2(pata *frame){
+  int ll, ul, li, ld;
+  int flag=0; 
+  for(li=0;li<frame->nc;li++){
+    for(int i=0;i<frame->nr;i++)
+      if(frame->imagen[i][li]!=0){flag=1; break;}
+    if(flag==1) {flag=0;break;}
+  }
+  for(ld=(frame->nc -1);ld>=0;ld--){
+    for(int i=0;i<frame->nr;i++)
+      if(frame->imagen[i][ld]!=0){flag=1; break;}
+    if(flag==1) {flag=0;break;}
+  }
+  for(ul=0;ul<frame->nr;ul++){
+    for(int j=0;j<frame->nc;j++)
+      if(frame->imagen[ul][j]!=0){flag=1; break;}
+    if(flag==1) {flag=0;break;}
+  }
+  for(ll=(frame->nr -1);ll>=0;ll--){
+    for(int j=0;j<frame->nc;j++)
+      if(frame->imagen[ll][j]!=0){flag=1; break;}
+    if(flag==1) {flag=0;break;}
+  }
+  
+int dir1, dir2,dir3;
+  for(int i=0;i<frame->nr-2;i+=2){
+    for(int j=0;j<frame->nc;j++){
+      if(frame->imagen[i][j]==255){dir1=j;
+        for(int k=0;k<frame->nc;k++){
+          if(frame->imagen[i+1][k]==255) {dir2=k; break;} 
+        }
+      if(dir2-dir1>0){
+        frame->a1[0]=dir2; frame->a1[1]=i;
+        flag=1; break;}
+      else{break;}
+      }
+    }
+    if(flag==1){ flag=0; break;}  }
+
+  frame->a2[0]=(frame->pf[0]+frame->p0[0])/2; frame->a2[1]=10+ul+2*(ll-ul)/4;
+  if(abs(frame->a2[0]-frame->pf[0])<20){
+    frame->a3[0]=li+10; frame->a3[1]=(frame->a2[1]+frame->pf[1])/2;
+  }
+  else if(frame->a2[0]<frame->pf[0]){
+  frame->a3[0]=frame->a2[0]+10; frame->a3[1]=frame->pf[1]-10;
+  }
+  else{
+  frame->a3[0]=frame->pf[0]-10; frame->a3[1]=frame->a2[1]+rand()%7;
+  }
+}
+
+void findArticulaciones3(pata *frame){
+int i,j;
+int gi,gj;
+int G[3][3];
+  for(int i;i<frame->nr;i++){
+    for(int j;j<frame->nc;j++){
+      if(frame->imagen[i][j]==255){
+         gi=i; gj=j;
+         for(int ni=0;ni<3;ni++){
+          for(int nj=0;nj<3;nj++){
+            G[ni][nj]=frame->imagen[gi+ni-1][gj+nj-1];
+          }
+         }
+      }
+    }
+  }
+
+
+}
+
+void algorithmHarris(pata *frame){
+double A[2][2]; 
+int p[2];
+double Response,traza; 
+double lamb1, lamb2; 
+double Ix, Iy;
+   for(int i=4;i<frame->nr-3;i++){
+     for(int j=4;j<frame->nc-3;j++){
+        for(int x=-2;x<=2;x++){
+          for(int y=-2;y<=2;y++){
+          Ix+=(double)(frame->imagen[i+y][j+x+1]-frame->imagen[i+y][j+x-1])/2.0;
+          Iy+=(double)(frame->imagen[i+y+1][j+x]-frame->imagen[i+y-1][j+x])/2.0;
+        }}
+        A[0][0]=Ix*Ix; A[1][1]=Iy*Iy; 
+        A[0][1]=Ix*Iy; A[1][0]=Ix*Iy;
+        traza=A[0][0]+A[1][1];
+        Response=A[0][0]*A[1][1]-A[1][0]*A[0][1]-0.06*traza*traza;
+        if(frame->imagen[i][j]!=0)printf("%lf\n",Response);
+        if(fabs(Response)>100000000){
+         p[0]=j; p[1]=i;
+         dibujaPunto(frame,p);
+        }
+        Ix=0; Iy=0;
+     }
+   }
+     
+}
+
+   
+
+
+
 
 /* Funciones para la Evolucion Diferencial*/
 void initPob(int **poblacion,int np, int *lims){
  for(int i=0;i<np;i++){
     poblacion[i][0]=2+rand()%lims[0];
-    poblacion[i][1]=lims[1]+rand()%(5);//(rand()%3-1)*
-    poblacion[i][2]=lims[2]+rand()%(5);//(rand()%3-1)*(rand()%(5));
-    poblacion[i][3]=lims[3]+rand()%(5);//(rand()%3-1)*(rand()%(5));
-    poblacion[i][4]=lims[4]+rand()%(5);//(rand()%3-1)*(rand()%(5));
+    poblacion[i][1]=lims[1]+(rand()%3-1)*(rand()%(30));
+    poblacion[i][2]=lims[2]+(rand()%3-1)*(rand()%(30));
+    poblacion[i][3]=lims[3]+(rand()%3-1)*(rand()%(30));
+    poblacion[i][4]=lims[4]+(rand()%3-1)*(rand()%(30));
  }
 }
 void representaPob(int **poblacion, pata *frame, int np){
@@ -245,10 +391,10 @@ int rs[3];
       V[i][j]=poblacion[rs[0]][j]+(int)(F*(double)(poblacion[rs[1]][j]-poblacion[rs[2]][j]));
    }
    if(V[i][0]>7) V[i][0]=2+rand()%lims[0];
-   if(V[i][1]>lims[1]+15 || V[i][1]<lims[1]-5) V[i][1]=lims[1]+rand()%(5);
-   if(V[i][2]>lims[2]+15 || V[i][2]<lims[2]-5) V[i][2]=lims[2]+rand()%(5);
-   if(V[i][3]>lims[3]+15 || V[i][3]<lims[3]-5) V[i][3]=lims[3]+rand()%(5);
-   if(V[i][4]>lims[4]+15 || V[i][4]<lims[4]-5) V[i][4]=lims[4]+rand()%(5);
+   if(V[i][1]>lims[1]+15 || V[i][1]<lims[1]-5) V[i][1]=lims[1]+rand()%(15);
+   if(V[i][2]>lims[2]+15 || V[i][2]<lims[2]-5) V[i][2]=lims[2]+rand()%(15);
+   if(V[i][3]>lims[3]+15 || V[i][3]<lims[3]-5) V[i][3]=lims[3]+rand()%(15);
+   if(V[i][4]>lims[4]+15 || V[i][4]<lims[4]-5) V[i][4]=lims[4]+rand()%(15);
 
   }
 
