@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 typedef struct rata{
 int nr; int nc; int gs;
 int **imagen;
@@ -45,4 +46,6 @@ double fob(int *x, pata frame);
 void selectionOp(int **X, int **U, int np, pata frame);
 void bestOp(int *xbest, int **X, int np, pata frame);
 int *algorithmDE(int np, int iter, double F, double Cr,int *lims, pata frame);
+double *obtenerAngulos(pata *frame, int iter, int np, double F, double Cr);
+void ratMove(char *pref, int nf,double **ang, int iter, int np,double F,double Cr);
 #endif 

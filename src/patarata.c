@@ -76,9 +76,15 @@ void pointBresenham(pata *frame, int p0[2],int pf[2]){
 }
 int *fPerpendicular(int p0[2],int pf[2], int width){
   double  m=(double)(pf[1]-p0[1])/(double)(pf[0]-p0[0]);
-  double mper=-1.0/m;
+  double mper;
   int *p=(int*)malloc(4*sizeof(int));
   int x1,y1; int x2,y2; 
+  if(fabs(m)<0.05){
+   x1=p0[0]; x2=p0[0];
+   y1=p0[1]+width; y2=p0[1]-width;
+  }
+  else
+  {mper=-1.0/m;
   x1=p0[0]; y1=p0[1]; 
   while((x1-p0[0])*(x1-p0[0])+(y1-p0[1])*(y1-p0[1])<width*width){
     x1++; 
@@ -88,7 +94,7 @@ int *fPerpendicular(int p0[2],int pf[2], int width){
   while((x2-p0[0])*(x2-p0[0])+(y2-p0[1])*(y2-p0[1])<width*width){
     x2--; 
     y2=mper*(x2-p0[0])+p0[1];
-  }
+  }}
   p[0]=x1; p[1]=y1; p[2]=x2; p[3]=y2;
 
 return p;}
@@ -293,7 +299,10 @@ int dir1, dir2,dir3;
     if(flag==1){ flag=0; break;}  }
 
   frame->a2[0]=(frame->pf[0]+frame->p0[0])/2; frame->a2[1]=10+ul+2*(ll-ul)/4;
-  if(abs(frame->a2[0]-frame->pf[0])<20){
+  if(frame->p0[0]>frame->pf[0]){
+    frame->a2[0]=frame->a1[0]+5+rand()%10;
+  }
+  if(abs(frame->a2[0]-frame->pf[0])<30){
     frame->a3[0]=li+10; frame->a3[1]=(frame->a2[1]+frame->pf[1])/2;
   }
   else if(frame->a2[0]<frame->pf[0]){
@@ -361,10 +370,10 @@ double Ix, Iy;
 void initPob(int **poblacion,int np, int *lims){
  for(int i=0;i<np;i++){
     poblacion[i][0]=2+rand()%lims[0];
-    poblacion[i][1]=lims[1]+(rand()%3-1)*(rand()%(30));
-    poblacion[i][2]=lims[2]+(rand()%3-1)*(rand()%(30));
-    poblacion[i][3]=lims[3]+(rand()%3-1)*(rand()%(30));
-    poblacion[i][4]=lims[4]+(rand()%3-1)*(rand()%(30));
+    poblacion[i][1]=lims[1]+(rand()%3-1)*(rand()%(10));
+    poblacion[i][2]=lims[2]+(rand()%3-1)*(rand()%(10));
+    poblacion[i][3]=lims[3]+(rand()%3-1)*(rand()%(10));
+    poblacion[i][4]=lims[4]+(rand()%3-1)*(rand()%(10));
  }
 }
 void representaPob(int **poblacion, pata *frame, int np){
@@ -388,14 +397,13 @@ int rs[3];
   for(int i=0;i<np;i++){
     randPerm(np,rs);
     for(int j=0;j<5;j++){
-      V[i][j]=poblacion[rs[0]][j]+(int)(F*(double)(poblacion[rs[1]][j]-poblacion[rs[2]][j]));
+      V[i][j]=poblacion[rs[0]][j]+(int)(F*randx()*(double)(poblacion[rs[1]][j]-poblacion[rs[2]][j]));
    }
-   if(V[i][0]>7) V[i][0]=2+rand()%lims[0];
-   if(V[i][1]>lims[1]+15 || V[i][1]<lims[1]-5) V[i][1]=lims[1]+rand()%(15);
-   if(V[i][2]>lims[2]+15 || V[i][2]<lims[2]-5) V[i][2]=lims[2]+rand()%(15);
-   if(V[i][3]>lims[3]+15 || V[i][3]<lims[3]-5) V[i][3]=lims[3]+rand()%(15);
-   if(V[i][4]>lims[4]+15 || V[i][4]<lims[4]-5) V[i][4]=lims[4]+rand()%(15);
-
+   if(V[i][0]>lims[0]+10 || V[i][0]<3) V[i][0]=2+rand()%lims[0];
+   if(V[i][1]>lims[1]+15 || V[i][1]<lims[1]-15) V[i][1]=lims[1]+rand()%(15);
+   if(V[i][2]>lims[2]+15 || V[i][2]<lims[2]-15) V[i][2]=lims[2]+rand()%(15);
+   if(V[i][3]>lims[3]+15 || V[i][3]<lims[3]-15) V[i][3]=lims[3]+rand()%(15);
+   if(V[i][4]>lims[4]+15 || V[i][4]<lims[4]-15) V[i][4]=lims[4]+rand()%(15);
   }
 
 }
@@ -480,3 +488,61 @@ for(int i=0;i<np;i++){free(X[i]); free(V[i]); free(U[i]);}
 free(X); free(V); free(U);
 
 return(xbest);}
+
+double *obtenerAngulos(pata *frame, int iter, int np, double F, double Cr){
+double *aux=(double*)malloc(4*sizeof(double));
+int *xb1=(int*)malloc(5*sizeof(int));
+int *xb2=(int*)malloc(5*sizeof(int));
+int *xb3=(int*)malloc(5*sizeof(int));
+int *xb4=(int*)malloc(5*sizeof(int));
+  puntoInicial(frame);
+  puntoFinal(frame);
+  findArticulaciones2(frame);
+int lim1[5]={6,frame->p0[0],frame->p0[1],frame->a1[0],frame->a1[1]};
+int lim2[5]={6,frame->a1[0],frame->a1[1],frame->a2[0],frame->a2[1]};
+int lim3[5]={6,frame->a2[0],frame->a2[1],frame->a3[0],frame->a3[1]};
+int lim4[5]={6,frame->a3[0],frame->a3[1],frame->pf[0],frame->pf[1]};
+  xb1=algorithmDE(np,iter,F,Cr,lim1,*frame);
+  int p01[2]={xb1[1],xb1[2]};
+  int pf1[2]={xb1[3],xb1[4]};
+  xb2=algorithmDE(np,iter,F,Cr,lim2,*frame);
+  int p02[2]={xb2[1],xb2[2]};
+  int pf2[2]={xb2[3],xb2[4]};
+  xb3=algorithmDE(np,iter,F,Cr,lim3,*frame);
+//printf("y aca?\n");
+  int p03[2]={xb3[1],xb3[2]};
+  int pf3[2]={xb3[3],xb3[4]};
+  xb4=algorithmDE(np/2,iter/2,F,Cr,lim4,*frame);
+  int p04[2]={xb4[1],xb4[2]};
+  int pf4[2]={xb4[3],xb4[4]};
+  dRectangulo(frame,p01,pf1,xb1[0]);
+  dRectangulo(frame,p02,pf2,xb2[0]);
+  dRectangulo(frame,p03,pf3,xb3[0]);
+  dRectangulo(frame,p04,pf4,xb4[0]);
+  aux[0]=atan2((double)(pf1[1]-p01[1]),(double)(pf1[0]-p01[0]));  
+  aux[1]=atan2((double)(pf2[1]-p02[1]),(double)(pf2[0]-p02[0]));  
+  aux[2]=atan2((double)(pf3[1]-p03[1]),(double)(pf3[0]-p03[0]));  
+  aux[3]=atan2((double)(pf4[1]-p04[1]),(double)(pf4[0]-p04[0]));  
+free(xb1);free(xb2);free(xb3);free(xb4);
+return(aux);}
+void ratMove(char *pref, int nf,double **ang,int iter,int np,double F,double Cr){
+ int nr, nc, maxw;
+ int tp=strlen(pref);
+  double Pi=4*atan(1);
+ pata myframe;
+ FILE *out; 
+ out=fopen("angulos.dat","w");
+for(int f=0;f<nf;f++){
+  sprintf(&pref[tp],"_%d.pgm",f+1);
+  readFrame(pref,&myframe);
+  ang[f]=obtenerAngulos(&myframe,np,iter,F,Cr);
+  fprintf(out,"%d %lf %lf %lf %lf\n",f+1,ang[f][0]/Pi,ang[f][1]/Pi,ang[f][2]/Pi,ang[f][3]/Pi);
+  printf("Se termino de procesar el frame <%d>\n",f+1);
+  //for(int i=0;i<4;i++)printf("%lf ",ang[f][i]);
+  //printf("\n");
+  sprintf(&pref[tp],"_ang%d.pgm",f+1);
+  writePgm(myframe.imagen,myframe.nr,myframe.nc,myframe.gs,pref);
+}   
+fclose(out);
+
+}

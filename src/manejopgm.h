@@ -4,7 +4,7 @@
 #include <stdlib.h> 
 #include <string.h>
 #include "patarata.h" 
-void readpgmParams(int argc, char *argv[], char *file);
+void readpgmParams(int argc, char *argv[], char *pref, int *nf);
 int **createMatrix(int nr, int nc);
 void freeMatrix(int **mat, int nr);
 int **rellenamatriz(int nr, int nc);

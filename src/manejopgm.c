@@ -1,7 +1,8 @@
 #include "manejopgm.h" 
 #include "patarata.h" 
-void readpgmParams(int argc, char *argv[],char *file){
-if(argc>1) strcpy(file,argv[1]);
+void readpgmParams(int argc, char *argv[],char *pref, int *nf){
+if(argc>1) strcpy(pref,argv[1]);
+if(argc>2) *nf=atoi(argv[2]);
 }
 
 int **createMatrix(int nr, int nc){
